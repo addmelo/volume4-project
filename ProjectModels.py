@@ -45,7 +45,7 @@ class Solow_Model_Parameters():
         else:
             return A * k ** self.alpha * n
     
-    def kprime(self, k, dpop, pop, start_working, retire, t):
+    def kprime(self, k, pop, start_working, retire, t):
         """
         Computes the change in capital (K') given the capital (K), population change (dpop),
         total population (pop), start_working age, retire age, and time (t).
@@ -65,7 +65,7 @@ class Solow_Model_Parameters():
             s = self.s(t)
         else:
             s = self.s
-        n = (dpop[start_working] - dpop[retire + 1]) / np.sum(pop[start_working:retire + 1])
+        n = (pop[start_working-1] + pop[retire]) / np.sum(pop[start_working:retire + 1])
         return s * self.y(k, t,np.sum(pop[start_working:retire+1],axis =0)/np.sum(pop,axis = 0)) - (self.delta + n) * k
 
 class Solution():
@@ -175,7 +175,7 @@ class Population_Solow_Model():
 
             # Add the capital allocation variables if necessary
             if self.include_SGP:
-                dx[-1] = self.SGP.kprime(x[-1], dx[:-1], x[:-1], start_working, retire, t)
+                dx[-1] = self.SGP.kprime(x[-1], x[:-1], start_working, retire, t)
 
             return dx
 
@@ -220,4 +220,4 @@ class Population_Solow_Model():
         else:
             # Calculate labor and return Solution instance
             n = np.sum(sol.y[:-1] * np.reshape(self.SGP.weights(np.arange(self.life_expectancy)), (-1, 1)), axis=0) / np.sum(sol.y[:-1], axis=0)
-            return Solution(sol.t, sol.y[:-1], sol.y[-1], self.SGP.y(sol.y[-1], ts, n))
+            return Solution(sol.t, sol.y[:-1], sol.y[-1], self.SGP.y(sol.y[-1], t_points, n))
