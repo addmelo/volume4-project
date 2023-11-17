@@ -65,7 +65,7 @@ class Solow_Model_Parameters():
             s = self.s(t)
         else:
             s = self.s
-        n = (dpop[start_working] + dpop[retire + 1]) / np.sum(pop[start_working:retire + 1])
+        n = (dpop[start_working] - dpop[retire + 1]) / np.sum(pop[start_working:retire + 1])
         return s * self.y(k, t,np.sum(pop[start_working:retire+1],axis =0)/np.sum(pop,axis = 0)) - (self.delta + n) * k
 
 class Solution():
